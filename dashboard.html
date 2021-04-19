@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="dashboard.css">
+
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="dashboard-data.js"></script>
+    <script>
+        var dt;
+        var table;
+        var tableParams = { showRowNumber: false, allowHtml: true, page: 'enable', pageSize: 25, width: '100%', height: '100%' };
+
+        google.charts.load('current', { 'packages': ['table'] }).then(function () {
+            dt = new google.visualization.DataTable({ cols: cols, rows: rows });
+
+            var view = new google.visualization.DataView(dt);
+            table = new google.visualization.Table(document.getElementById('table_div'));
+            table.draw(view, tableParams);
+            google.charts.setOnLoadCallback(drawTable);
+        });
+
+        function drawTable() {
+            google.visualization.events.addListener(table, 'select', function () {
+                tableSelectHandler(table);
+            });
+
+            $('#tab_chartdata').click();
+
+        }
+
+
+        function redrawTable() {
+            console.log("drawing");
+            tableParams.pageSize = $("#pageLength").val();
+
+
+
+            var view = new google.visualization.DataView(dt);
+
+            view.setRows(view.getFilteredRows([{
+                column: 0,
+                test: (value, rowId, columnId, datatable) => {
+                    
+                    var groups = $("#filtersArea").find(".filterGroup");
+                    if (groups.length == 0) return true;
+                    for (var i = 0; i < groups.length; i++) {
+
+
+                        var groupApply = true;
+
+                        var filters = groups.eq(i).find(".filterDiv");
+
+                        for (var j = 0; j < filters.length; j++) {
+                            var columnIndex = filters.eq(j).find("select").eq(0).val();
+                            var operator = filters.eq(j).find("select").eq(1).val();
+                            var value = datatable.getValue(rowId, parseInt(columnIndex, 10));
+                            var userValue = filters.eq(j).find("input").eq(0).val();
+                            if (operator == "not equals") {
+                                if (!(value != userValue)) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "greater than") {
+                                if (!(parseFloat(value) > parseFloat(userValue))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "greater or equal") {
+                                if (!(parseFloat(value) >= parseFloat(userValue))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "less than") {
+                                if (!(parseFloat(value) < parseFloat(userValue))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "less or equal") {
+                                if (!(parseFloat(value) <= parseFloat(userValue))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "contains") {
+
+                                if (!(value.match(new RegExp(userValue,"i")))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "does not contain") {
+                                if (value.match(new RegExp(userValue,"i"))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "starts with") {
+                                if (!(value.match(new RegExp("^" + userValue,"i")))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "ends with") {
+                                if (!(value.match(new RegExp(userValue + "$","i")))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        if (groupApply) {
+
+                            return true;
+                        }
+
+                    }
+
+                    return false;
+
+                    
+
+                 
+                
+                }
+            }]));
+
+
+
+
+
+            table.draw(view, tableParams);
+            $('#tab_chartdata').click().click();
+
+
+        }
+    </script>
+
+    <script type="text/javascript" src="dashboard-editing.js"></script>
+
+</head>
+
+<body>
+
+    <button class="accordion">Sharing</button>
+    <div class="accordion_panel">
+    </div>
+
+    <button class="accordion">Visualization</button>
+    <div class="accordion_panel">
+    </div>
+
+    <button class="accordion" id="showFilters">Filters</button>
+    <div class="accordion_panel" id="filtersArea">
+        <div style="text-align: right;">
+            <button id="filterData">Filter Data</button>
+            <button id="newFilterGroup">New Filter Group</button>
+            <button id="deleteFilters">Clear Filters</button>
+        </div>
+
+    </div>
+
+    <button class="accordion" id="tab_chartdata">Data</button>
+    <div class="accordion_panel">
+        <div id="table_div"></div>
+        <div id="truefalse">
+            <a href="#true" onclick="setBoolCell(true);">✔</a> <a href="#false" onclick="setBoolCell(false);">✗</a>
+        </div>
+        <div id="pageLengthDiv">
+            Page Size:
+            <select id="pageLength">
+                <option>10</option>
+                <option selected>25</option>
+                <option>50</option>
+                <option>100</option>
+                <option>500</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+
+        $("#pageLength").change(redrawTable);
+
+    </script>
+
+    <script>
+                    var operators = ["equals", "not equals", "greater than", "greater or equal", "less than", "less or equal", "contains", "does not contain", "starts with", "ends with"];
+            var filterDiv = "<div class='filterDiv'>";
+                filterDiv += "<select>" + cols.reduce(function(total, currentValue, currentIndex, arr) {
+                        return currentIndex > 1 ? total + "<option value='" + currentIndex + "'>" + currentValue.label + "</option>" : total;
+                }) + "</select>";
+                
+                filterDiv += "<select>" + operators.reduce(function(total, currentValue) {
+                    return total + "<option>" + currentValue + "</option>"
+
+                }) + "</select><input type='text'>";
+                
+                
+                filterDiv += "</div>";
+
+        $("#newFilterGroup").click(function() {
+
+            console.log($("#filtersArea").find(".filterGroup"))
+            if ($("#filtersArea").find(".filterGroup").length > 0) {
+
+                $("#filtersArea").append("<div>OR</div>");
+            }
+            $("#filtersArea").append("<div class='filterGroup'>" + filterDiv + "<button class='newFilter'>New Filter</button></div>");
+            $("#showFilters").click().click();
+        });
+
+        $("#filtersArea").on("click", ".newFilter", function() {
+            $(this).before("<div>AND</div>" + filterDiv);
+            $("#showFilters").click().click();
+        });
+
+        $("#filterData").click(redrawTable);
+
+
+        $("#deleteFilters").click(function() {
+            $("#filtersArea").find(".filterGroup").remove();
+            redrawTable();
+        })
+
+    </script>
+
+    <style>
+        #newFilterGroup {
+            margin: 1rem;
+        }
+        .filterGroup {
+            margin: 1rem;
+            border: solid;
+            padding: 1rem;
+
+        }
+        .filterDiv {
+            display: flex;
+
+        }
+        .filterDiv input,select {
+            width: 33.33%;
+            margin: 1rem;
+        }
+    </style>
+
+
+</body>
+
+</html>

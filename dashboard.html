@@ -4,6 +4,10 @@
 <head>
     <link rel="stylesheet" href="dashboard.css">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+        crossorigin="anonymous" />
+
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -44,9 +48,11 @@
             view.setRows(view.getFilteredRows([{
                 column: 0,
                 test: (value, rowId, columnId, datatable) => {
-                    
+
                     var groups = $("#filtersArea").find(".filterGroup");
                     if (groups.length == 0) return true;
+
+
                     for (var i = 0; i < groups.length; i++) {
 
 
@@ -59,7 +65,44 @@
                             var operator = filters.eq(j).find("select").eq(1).val();
                             var value = datatable.getValue(rowId, parseInt(columnIndex, 10));
                             var userValue = filters.eq(j).find("input").eq(0).val();
-                            if (operator == "not equals") {
+
+
+                            if (typeof value == "number") {
+                                userValue = parseFloat(userValue);
+
+                            }
+                            else if (typeof value == "string") {
+
+                                userValue = String(userValue);
+
+                            }
+                            else if (typeof value == "boolean") {
+
+                                userValue = filters.eq(j).find("select").eq(2).val();
+
+                                if (userValue == "[blank]") {
+                                    userValue = "";
+                                }
+                                else if (userValue == "true") {
+                                    userValue = true;
+                                }
+                                else if (userValue == "false") {
+                                    userValue = false;
+                                }
+
+                            }
+
+
+
+
+                            if (operator == "equals") {
+                                if (!(value === userValue)) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator === "not equals") {
                                 if (!(value != userValue)) {
 
                                     groupApply = false;
@@ -96,28 +139,42 @@
                             }
                             else if (operator == "contains") {
 
-                                if (!(value.match(new RegExp(userValue,"i")))) {
+                                if (!(value.match(new RegExp(userValue, "i")))) {
 
                                     groupApply = false;
                                     break;
                                 }
                             }
                             else if (operator == "does not contain") {
-                                if (value.match(new RegExp(userValue,"i"))) {
+                                if (value.match(new RegExp(userValue, "i"))) {
 
                                     groupApply = false;
                                     break;
                                 }
                             }
                             else if (operator == "starts with") {
-                                if (!(value.match(new RegExp("^" + userValue,"i")))) {
+                                if (!(value.match(new RegExp("^" + userValue, "i")))) {
 
                                     groupApply = false;
                                     break;
                                 }
                             }
                             else if (operator == "ends with") {
-                                if (!(value.match(new RegExp(userValue + "$","i")))) {
+                                if (!(value.match(new RegExp(userValue + "$", "i")))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "does not start with") {
+                                if ((value.match(new RegExp("^" + userValue, "i")))) {
+
+                                    groupApply = false;
+                                    break;
+                                }
+                            }
+                            else if (operator == "does not end with") {
+                                if ((value.match(new RegExp(userValue + "$", "i")))) {
 
                                     groupApply = false;
                                     break;
@@ -135,10 +192,10 @@
 
                     return false;
 
-                    
 
-                 
-                
+
+
+
                 }
             }]));
 
@@ -216,40 +273,120 @@
     </script>
 
     <script>
-                    var operators = ["equals", "not equals", "greater than", "greater or equal", "less than", "less or equal", "contains", "does not contain", "starts with", "ends with"];
-            var filterDiv = "<div class='filterDiv'>";
-                filterDiv += "<select>" + cols.reduce(function(total, currentValue, currentIndex, arr) {
-                        return currentIndex > 1 ? total + "<option value='" + currentIndex + "'>" + currentValue.label + "</option>" : total;
-                }) + "</select>";
-                
-                filterDiv += "<select>" + operators.reduce(function(total, currentValue) {
-                    return total + "<option>" + currentValue + "</option>"
+        var numericOperators = ["equals", "not equals", "greater than", "greater or equal", "less than", "less or equal"];
+        var stringOperators = ["equals", "not equals", "contains", "does not contain", "starts with", "ends with", "does not start with", "does not end with"];
+        var booleanOperators = ["equals", "not equals"];
 
-                }) + "</select><input type='text'>";
-                
-                
-                filterDiv += "</div>";
 
-        $("#newFilterGroup").click(function() {
+
+
+        var operators = ["equals", "not equals", "greater than", "greater or equal", "less than", "less or equal", "contains", "does not contain", "starts with", "ends with"];
+        var filterDiv = "<div class='filterDiv'>";
+        filterDiv += "<select class='columnName'>" + cols.reduce(function (total, currentValue, currentIndex, arr) {
+            return currentIndex > 1 ? total + "<option value='" + currentIndex + "' data-type='" + currentValue.type + "'>" + currentValue.label + "</option>" : total;
+        }, "<option value disabled selected>--Please select a column--</option>") + "</select>";
+
+        filterDiv += "<select class='operator'></select><input type='text'>";
+
+
+        filterDiv += "<button class='deleteFilter'><i class='fas fa-trash-alt'></i></button></div>";
+
+        $("#newFilterGroup").click(function () {
 
             console.log($("#filtersArea").find(".filterGroup"))
             if ($("#filtersArea").find(".filterGroup").length > 0) {
 
                 $("#filtersArea").append("<div>OR</div>");
             }
-            $("#filtersArea").append("<div class='filterGroup'>" + filterDiv + "<button class='newFilter'>New Filter</button></div>");
+            $("#filtersArea").append("<div class='filterGroup'><button class='deleteFilterGroup'>Delete Filter Group</button>" + filterDiv + "<button class='newFilter'>New Filter</button></div>");
             $("#showFilters").click().click();
         });
 
-        $("#filtersArea").on("click", ".newFilter", function() {
-            $(this).before("<div>AND</div>" + filterDiv);
+        $("#filtersArea").on("click", ".newFilter", function () {
+            if ($(this).siblings(".filterDiv").length > 0) {
+
+                $(this).before("<div>AND</div>");
+            }
+            $(this).before(filterDiv);
             $("#showFilters").click().click();
+        });
+        $("#filtersArea").on("change", ".columnName", function () {
+
+            var type = $(this).find("option:selected").data("type");
+            var filterDiv = $(this).closest(".filterDiv");
+            var operatorSelect = filterDiv.find(".operator")
+
+            if (type == "number") {
+
+                var operatorsToUse = numericOperators;
+
+            }
+            else if (type == "boolean") {
+                var operatorsToUse = booleanOperators;
+            }
+            else {
+                var operatorsToUse = stringOperators;
+            }
+
+            console.log(type)
+            console.log(filterDiv.find("select").length)
+            if (type == "boolean" && filterDiv.find("input").length > 0) {
+
+
+                filterDiv.find("input").replaceWith("<select><option>[blank]</option><option>true</option><option>false</option></select>");
+            }
+            else if (type != "boolean" && filterDiv.find("select").length > 2) {
+
+                $(this).closest(".filterDiv").find("select:last").replaceWith("<input type='text'>")
+
+            }
+
+            operatorSelect.html(operatorsToUse.reduce(function (total, currentValue) {
+                return total + "<option>" + currentValue + "</option>"
+
+            }, ""));
+
+        });
+
+        $("#filtersArea").on("click", ".deleteFilter", function () {
+            var groupDiv = $(this).closest(".filterDiv").eq(0);
+
+            if (groupDiv.prev().html() == "AND") {
+                groupDiv.prev().fadeOut(500, function () { $(this).remove(); });
+
+
+            }
+            else if (groupDiv.next().html() == "AND") {
+
+                groupDiv.next().fadeOut(500, function () { $(this).remove(); });
+
+            }
+            groupDiv.fadeOut(500, function () { $(this).remove(); redrawTable(); });
+
+
+        });
+        $("#filtersArea").on("click", ".deleteFilterGroup", function () {
+            var groupDiv = $(this).closest(".filterGroup").eq(0);
+
+            if (groupDiv.prev().html() == "OR") {
+                groupDiv.prev().fadeOut(500, function () { $(this).remove(); });
+
+
+            }
+            else if (groupDiv.next().html() == "OR") {
+
+                groupDiv.next().fadeOut(500, function () { $(this).remove(); });
+
+            }
+            groupDiv.fadeOut(500, function () { $(this).remove(); redrawTable(); });
+
+
         });
 
         $("#filterData").click(redrawTable);
 
 
-        $("#deleteFilters").click(function() {
+        $("#deleteFilters").click(function () {
             $("#filtersArea").find(".filterGroup").remove();
             redrawTable();
         })
@@ -260,18 +397,22 @@
         #newFilterGroup {
             margin: 1rem;
         }
+
         .filterGroup {
             margin: 1rem;
             border: solid;
             padding: 1rem;
 
         }
+
         .filterDiv {
             display: flex;
 
         }
-        .filterDiv input,select {
-            width: 33.33%;
+
+        .filterDiv input,
+        select {
+            width: 30%;
             margin: 1rem;
         }
     </style>

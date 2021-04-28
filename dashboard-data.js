@@ -6,9 +6,59 @@ var cols = [
                 {id: 'last_name', label: 'last_name', type: 'string'},
                 {id: 'email', label: 'email', type: 'string'},
                 {id: 'ip_address', label: 'ip_address', type: 'string'},
+                {id: 'completed1', label: 'completed1', type: 'boolean'},
+                {id: 'completed2', label: 'completed2', type: 'boolean'},
+                {id: 'score1', label: 'score1', type: 'number'},
+                {id: 'score2', label: 'score2', type: 'number'},
+                {id: 'year', label: 'year', type: 'number'},
+                {id: 'geo1', label: 'geo1', type: 'string'},
+                {id: 'geo2', label: 'geo2', type: 'string'},
+];
+
+var rows = [
+    {c:[{v:'<input type="checkbox" name="rowtodel[]" value="9">'},{v: 9}, {v: 11865}, {v: 'Mathilde'}, {v: 'Mousdall'}, {v: 'mmousdall0@gizmodo.com'}, {v: '174.200.183.248'}, {v: false}, {v: true}, {v: 0.54}, {v: 0.1}, {v: 2021}, {v: 'Finland'}, {v: 'Bogota'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="10">'},{v: 10}, {v: 61661}, {v: 'Mathilde'}, {v: 'Caseley'}, {v: 'ccaseley1@ucla.edu'}, {v: '33.153.59.206'}, {v: true}, {v: true}, {v: 0.28}, {v: 0.87}, {v: 2020}, {v: 'Denmark'}, {v: 'Bucharest'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="11">'},{v: 11}, {v: 14626}, {v: 'Mathilde'}, {v: 'Smeeton'}, {v: 'bsmeeton2@livejournal.com'}, {v: '139.186.90.176'}, {v: false}, {v: false}, {v: 0.32}, {v: 0.25}, {v: 2020}, {v: 'Switzerland'}, {v: 'New York City NY'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="12">'},{v: 12}, {v: 36527}, {v: 'Lilith'}, {v: 'Mathilde'}, {v: 'lcossey3@accuweather.com'}, {v: '66.175.220.182'}, {v: false}, {v: false}, {v: 0.72}, {v: 0.58}, {v: 2021}, {v: 'New Zealand'}, {v: 'Philadelphia PA'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="13">'},{v: 13}, {v: 63665}, {v: 'Kissie'}, {v: 'Mathilde'}, {v: 'kciraldo4@google.de'}, {v: '140.17.174.85'}, {v: true}, {v: false}, {v: 0.01}, {v: 0.85}, {v: 2019}, {v: 'Belgium'}, {v: 'Paris'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="14">'},{v: 14}, {v: 15691}, {v: 'Margarita'}, {v: 'Domm'}, {v: 'mdomm5@nih.gov'}, {v: '110.50.180.15'}, {v: true}, {v: true}, {v: 0.54}, {v: 0.98}, {v: 2021}, {v: 'Canada'}, {v: 'Chicago IL'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="15">'},{v: 15}, {v: 47162}, {v: 'Ange'}, {v: 'Portlock'}, {v: 'aportlock6@arizona.edu'}, {v: '60.189.14.240'}, {v: false}, {v: true}, {v: 0.77}, {v: 0.25}, {v: 2019}, {v: 'Belgium'}, {v: 'Quito'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="16">'},{v: 16}, {v: 50454}, {v: 'Forbes'}, {v: 'Jozsika'}, {v: 'fjozsika7@marriott.com'}, {v: '108.43.60.111'}, {v: false}, {v: true}, {v: 0.88}, {v: 0.78}, {v: 2020}, {v: 'Canada'}, {v: 'Zagreb'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="17">'},{v: 17}, {v: 31708}, {v: 'Lyndsay'}, {v: 'Noye'}, {v: 'lnoye8@canalblog.com'}, {v: '155.211.81.74'}, {v: true}, {v: false}, {v: 0.99}, {v: 0.45}, {v: 2020}, {v: 'Switzerland'}, {v: 'Cali'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="18">'},{v: 18}, {v: 48011}, {v: 'Forester'}, {v: 'Peerman'}, {v: 'fpeerman9@statcounter.com'}, {v: '151.131.44.201'}, {v: false}, {v: true}, {v: 0.53}, {v: 0.69}, {v: 2021}, {v: 'United Kingdom'}, {v: 'Tallinn'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="19">'},{v: 19}, {v: 88743}, {v: 'Arleyne'}, {v: 'Remington'}, {v: 'aremingtona@oracle.com'}, {v: '139.231.153.135'}, {v: false}, {v: false}, {v: 0.69}, {v: 0.58}, {v: 2019}, {v: 'United Kingdom'}, {v: 'Vilnius'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="20">'},{v: 20}, {v: 41117}, {v: 'Roarke'}, {v: 'Hales'}, {v: 'rhalesb@sohu.com'}, {v: '6.105.116.136'}, {v: true}, {v: true}, {v: 0.74}, {v: 0.21}, {v: 2019}, {v: 'New Zealand'}, {v: 'Bordeaux'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="21">'},{v: 21}, {v: 67179}, {v: 'Davida'}, {v: 'Tubby'}, {v: 'dtubbyc@addthis.com'}, {v: '25.146.77.55'}, {v: true}, {v: false}, {v: 0.13}, {v: 0.36}, {v: 2021}, {v: 'Belgium'}, {v: 'Bangkok'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="22">'},{v: 22}, {v: 48755}, {v: 'Jeanette'}, {v: 'Dumbreck'}, {v: 'jdumbreckd@printfriendly.com'}, {v: '151.66.232.80'}, {v: true}, {v: false}, {v: 0.18}, {v: 0.98}, {v: 2018}, {v: 'Guatemala'}, {v: 'London'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="23">'},{v: 23}, {v: 40323}, {v: 'Guinevere'}, {v: 'Caselli'}, {v: 'gcasellie@livejournal.com'}, {v: '244.58.87.253'}, {v: false}, {v: false}, {v: 0.92}, {v: 1}, {v: 2020}, {v: 'Egypt'}, {v: 'Riga'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="24">'},{v: 24}, {v: 12131}, {v: 'Alvira'}, {v: 'Mesant'}, {v: 'amesantf@moonfruit.com'}, {v: '91.245.64.232'}, {v: false}, {v: true}, {v: 0.26}, {v: 0.97}, {v: 2019}, {v: 'Zimbabwe'}, {v: 'Rome'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="25">'},{v: 25}, {v: 82261}, {v: 'Reeba'}, {v: 'Kemwal'}, {v: 'rkemwalg@fc2.com'}, {v: '230.154.223.27'}, {v: false}, {v: false}, {v: 0.7}, {v: 0.58}, {v: 2021}, {v: 'China'}, {v: 'Montréal QC'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="26">'},{v: 26}, {v: 58875}, {v: 'Maxy'}, {v: 'McGuinley'}, {v: 'mmcguinleyh@earthlink.net'}, {v: '73.104.231.200'}, {v: true}, {v: false}, {v: 0.25}, {v: 0.55}, {v: 2020}, {v: 'Egypt'}, {v: 'Sydney'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="27">'},{v: 27}, {v: 19849}, {v: 'Nanny'}, {v: 'Halton'}, {v: 'nhaltoni@bbc.co.uk'}, {v: '130.249.199.200'}, {v: false}, {v: true}, {v: 0.26}, {v: 0.61}, {v: 2020}, {v: 'Belgium'}, {v: 'São Paulo'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="28">'},{v: 28}, {v: 44410}, {v: 'Chelsey'}, {v: 'Borgars'}, {v: 'cborgarsj@salon.com'}, {v: '62.76.138.127'}, {v: false}, {v: true}, {v: 0.32}, {v: ''}, {v: 2020}, {v: 'Philippines'}, {v: 'Istanbul'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="29">'},{v: 29}, {v: 62190}, {v: 'Catina'}, {v: 'Fenners'}, {v: 'cfennersk@ocn.ne.jp'}, {v: '120.92.98.47'}, {v: true}, {v: true}, {v: 0.34}, {v: 0.87}, {v: 2021}, {v: 'Guatemala'}, {v: 'Cairo'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="30">'},{v: 30}, {v: 67283}, {v: 'Gerek'}, {v: 'Measor'}, {v: 'gmeasorl@a8.net'}, {v: '37.46.121.82'}, {v: false}, {v: false}, {v: 0.17}, {v: 0.55}, {v: 2020}, {v: 'Switzerland'}, {v: 'Doha'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="31">'},{v: 31}, {v: 32643}, {v: 'Tyson'}, {v: 'Runham'}, {v: 'trunhamm@webs.com'}, {v: '46.231.152.138'}, {v: true}, {v: true}, {v: 0.9}, {v: 0.74}, {v: 2021}, {v: 'Czech Republic'}, {v: 'Kabul'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="32">'},{v: 32}, {v: 52406}, {v: 'Lyndsey'}, {v: 'Bustard'}, {v: 'lbustardn@techcrunch.com'}, {v: '48.1.236.60'}, {v: false}, {v: false}, {v: 0.3}, {v: 0.13}, {v: 2019}, {v: 'United Kingdom'}, {v: 'Kampala'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="33">'},{v: 33}, {v: 56218}, {v: 'Ysabel'}, {v: 'Cranidge'}, {v: 'ycranidgeo@amazon.com'}, {v: '151.144.43.237'}, {v: true}, {v: true}, {v: 0.3}, {v: 0.08}, {v: 2019}, {v: 'Guatemala'}, {v: 'Ulaanbaatar'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="34">'},{v: 34}, {v: 41790}, {v: 'Amber'}, {v: 'Alliston'}, {v: 'aallistonp@squarespace.com'}, {v: '120.81.174.251'}, {v: false}, {v: false}, {v: 0.43}, {v: 0.91}, {v: 2021}, {v: 'Japan'}, {v: 'Lusaka'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="35">'},{v: 35}, {v: 36229}, {v: 'Norry'}, {v: 'Ropars'}, {v: 'nroparsq@google.cn'}, {v: '154.154.220.223'}, {v: false}, {v: true}, {v: 0.08}, {v: 0.56}, {v: 2020}, {v: 'Lithuania'}, {v: 'Seoul'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="36">'},{v: 36}, {v: 44508}, {v: 'Benny'}, {v: 'Dorro'}, {v: 'bdorror@cnet.com'}, {v: '232.19.177.87'}, {v: false}, {v: true}, {v: 0.2}, {v: 0.02}, {v: 2020}, {v: 'Japan'}, {v: 'Yamoussoukro'}]},
+{c:[{v:'<input type="checkbox" name="rowtodel[]" value="37">'},{v: 37}, {v: 84525}, {v: 'Kurtis'}, {v: 'Pinnijar'}, {v: 'kpinnijars@cbc.ca'}, {v: '35.152.211.75'}, {v: true}, {v: false}, {v: 0.55}, {v: 0.77}, {v: 2020}, {v: 'Uzbekistan'}, {v: 'Monrovia'}]},
+];
+
+/*
+var cols = [
+                {id: 'delcheck'},
+                {id: 'id', type: 'number'},
+                {id: 'student_number', label: 'student_number', type: 'number'},
+                {id: 'first_name', label: 'first_name', type: 'string'},
+                {id: 'last_name', label: 'last_name', type: 'string'},
+                {id: 'email', label: 'email', type: 'string'},
+                {id: 'ip_address', label: 'ip_address', type: 'string'},
                 {id: 'completed', label: 'completed', type: 'boolean'},
                 {id: 'score', label: 'score', type: 'number'}];
-        
+
 var rows = [
         {c:[{v:'<input type="checkbox" name="rowtodel[]" value="9">'}, {v: 9}, {v: 11865}, {v: 'Mathilde'}, {v: 'Mousdall'}, {v: 'mmousdall0@gizmodo.com'}, {v: '174.200.183.248'}, {v: false}, {v: 0.54}]},
         {c:[{v:'<input type="checkbox" name="rowtodel[]" value="10">'}, {v: 10}, {v: 61661}, {v: 'Chevalier'}, {v: 'Caseley'}, {v: 'ccaseley1@ucla.edu'}, {v: '33.153.59.206'}, {v: true}, {v: 0.28}]},
@@ -39,4 +89,4 @@ var rows = [
         {c:[{v:'<input type="checkbox" name="rowtodel[]" value="35">'}, {v: 35}, {v: 36229}, {v: 'Norry'}, {v: 'Ropars'}, {v: 'nroparsq@google.cn'}, {v: '154.154.220.223'}, {v: false}, {v: 0.08}]},
         {c:[{v:'<input type="checkbox" name="rowtodel[]" value="36">'}, {v: 36}, {v: 44508}, {v: 'Benny'}, {v: 'Dorro'}, {v: 'bdorror@cnet.com'}, {v: '232.19.177.87'}, {v: false}, {v: 0.2}]},
         {c:[{v:'<input type="checkbox" name="rowtodel[]" value="37">'}, {v: 37}, {v: 84525}, {v: 'Kurtis'}, {v: 'Pinnijar'}, {v: 'kpinnijars@cbc.ca'}, {v: '35.152.211.75'}, {v: true}, {v: 0.55}]},
-    ];
+    ]; */

@@ -18,7 +18,7 @@
         var table;
         var tableParams = { showRowNumber: false, allowHtml: true, page: 'enable', pageSize: 25, width: '100%', height: '100%' };
 
-        google.charts.load('current', { 'packages': ['table'] }).then(function () {
+        google.charts.load('current', { 'packages': ['table', 'corechart', 'treemap', 'wordtree'] }).then(function () {
             dt = new google.visualization.DataTable({ cols: cols, rows: rows });
 
             var view = new google.visualization.DataView(dt);
@@ -37,7 +37,7 @@
         }
 
 
-        function redrawTable() {
+        function redrawTable(dataOnly) {
             console.log("drawing");
             tableParams.pageSize = $("#pageLength").val();
 
@@ -199,12 +199,30 @@
                 }
             }]));
 
+            console.log(!dataOnly)
 
+            console.log(dataOnly)
+            
+            var arr = [];
+            for (var i = 0; i < view.getNumberOfRows(); i++) {
+                var row = [];
+                for (var j = 0; j < cols.length; j++) {
+                    row.push(view.getValue(i, j));
 
+                }
+                arr.push(row);
+            }
 
-
+            if (!dataOnly) {
+            console.log(arr)
             table.draw(view, tableParams);
             $('#tab_chartdata').click().click();
+
+            return drawChart(arr);
+            }
+
+            
+            return arr;
 
 
         }
@@ -220,8 +238,48 @@
     <div class="accordion_panel">
     </div>
 
-    <button class="accordion">Visualization</button>
+    <button class="accordion" id="showVisualization">Visualization</button>
     <div class="accordion_panel">
+        <select id="chartsCategory">
+            <option selected value disabled>
+                --Please select an option--
+            </option>
+            <option>
+                Comparison
+            </option>
+            <option>
+                Composition
+            </option>
+            <option>
+                Process
+            </option>
+            <option>
+                Relationship
+            </option>
+            <option>
+                Distribution
+            </option>
+            <option>
+                Geography
+            </option>
+        </select>
+        <div id="chartsAvailable">
+
+        </div>
+
+        <div id="chartColumns">
+
+        </div>
+        <button id="addChartColumn">Add</button>
+
+        <div id="chartArea">
+
+        </div>
+
+
+
+
+
     </div>
 
     <button class="accordion" id="showFilters">Filters</button>
@@ -268,7 +326,7 @@
             });
         }
 
-        $("#pageLength").change(redrawTable);
+        $("#pageLength").change(() => redrawTable());
 
     </script>
 
@@ -383,7 +441,7 @@
 
         });
 
-        $("#filterData").click(redrawTable);
+        $("#filterData").click(() => redrawTable());
 
 
         $("#deleteFilters").click(function () {
@@ -392,7 +450,7 @@
         })
 
     </script>
-
+    <script type="text/javascript" src="dashboard-visualization.js"></script>
     <style>
         #newFilterGroup {
             margin: 1rem;
@@ -405,15 +463,27 @@
 
         }
 
-        .filterDiv {
+        .filterDiv,  #chartColumns div {
             display: flex;
 
         }
 
         .filterDiv input,
-        select {
+        select, #chartColumns div input, #chartColumns div select  {
             width: 30%;
             margin: 1rem;
+        }
+
+        #chartsAvailable div {
+            width: 22%;
+            margin: 1%;
+            display: inline-block;
+        }
+
+        .activeChart {
+
+            border: solid turquoise 1px;
+
         }
     </style>
 

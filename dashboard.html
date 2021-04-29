@@ -18,7 +18,7 @@
         var table;
         var tableParams = { showRowNumber: false, allowHtml: true, page: 'enable', pageSize: 25, width: '100%', height: '100%' };
 
-        google.charts.load('current', { 'packages': ['table', 'corechart', 'treemap', 'wordtree'] }).then(function () {
+        google.charts.load('current', { 'packages': ['table', 'corechart', 'treemap', 'wordtree', 'timeline', 'geochart', 'map'] }).then(function () {
             dt = new google.visualization.DataTable({ cols: cols, rows: rows });
 
             var view = new google.visualization.DataView(dt);

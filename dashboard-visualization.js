@@ -9,19 +9,74 @@ $("#chartsCategory").change(function(){
     }
 
     $("#chartsAvailable").html(html);
-    $("#showVisualization").click().click();
+    var imgs = $("#chartsAvailable").find("img");
+
+    checkifImgsLoaded(imgs);
 
 
 });
+
+function checkifImgsLoaded(imgs) {
+
+
+    for (var i = 0; i < imgs.length; i++) {
+        console.log(imgs.eq(i).attr("src"))
+        if (!imgs.eq(i)[0].complete) {
+
+            return setTimeout(checkifImgsLoaded, 200, imgs);
+
+        }
+    
+    }
+
+    $("#showVisualization").click().click();
+
+
+}
+
+
+
+
 $("#chartsAvailable").on("click", "div", function() {
 
     $(this).siblings().removeClass("activeChart");
     $(this).addClass("activeChart");
     $("#chartArea").html("");
 
+    var activeChart = $(this).text();
+
+    if (activeChart == "Pie" || activeChart == "Donut") {
+
+        $("#chartColumns").find("input[type='color']").css("visibility", "hidden");
+    }
+    else {
+        $("#chartColumns").find("input[type='color']").css("visibility", "visible");
+
+    }
+
+
+    if (allowMultiple.indexOf(activeChart) == -1) {
+
+        var columnsDivs = $("#chartColumns").find("div");
+        for (var i = 1; i < columnsDivs.length; i++) {
+
+            columnsDivs.eq(i).remove();
+        }
+
+        $("#addChartColumn").hide();
+    }
+    else {
+
+        $("#addChartColumn").show();
+    }
+
+
     if ($("#chartColumns").find("div").length == 0) {
         $("#addChartColumn").click();
-    }   
+    }
+    
+    
+    $("#showVisualization").click().click();
     drawChart();
 
 })
@@ -36,12 +91,39 @@ $("#addChartColumn").click(function(){
 
     div += "<input type='color'>";
 
-    div += "<input type='text'><button class='deleteFilter'><i class='fas fa-trash-alt'></i></button></div>";
+    div += "<input type='text'><button class='deleteColumn'><i class='fas fa-trash-alt'></i></button></div>";
 
     div += "</div>";
 
+    
+
     $("#chartColumns").append(div);
+
+    var activeChart = $(".activeChart").eq(0).text();
+    if (activeChart == "Pie" || activeChart == "Donut") {
+
+        $("#chartColumns").find("input[type='color']").css("visibility", "hidden");
+
+    }
+    else {
+        $("#chartColumns").find("input[type='color']").css("visibility", "visible");
+
+
+    }
+
+    
+
     $("#showVisualization").click().click();
+});
+
+$("#chartColumns").on("click", ".deleteColumn", function(){
+
+    $(this).closest("div").remove();
+    if ($("#chartColumns").find("div").length == 0) {
+        $("#addChartColumn").click();
+    }    
+    drawChart();
+
 });
 
 $("#chartColumns").on("change", "input,select", function(){
@@ -59,15 +141,19 @@ function drawChart(array) {
     var columnsDivs = $("#chartColumns").find("div");
     
     var obj = {};
+   
+    var colors = [];
 
     var columnsToDraw = [];
+
     for (var i = 0; i < columnsDivs.length; i++) {
         var columnSelected = columnsDivs.eq(i).find("select").eq(0).val();
         if (!columnSelected) continue;
+        colors.push(columnsDivs.eq(i).find("input").eq(0).val());
         columnsToDraw.push(parseInt(columnsDivs.eq(i).find("select").eq(0).val(), 10));
 
     }
-    if (columnsToDraw.length == 0) return;
+    if (columnsToDraw.length == 0) return $("#chartArea").html("");
     console.log("columnsToDraw")
     console.log(columnsToDraw)
 
@@ -95,7 +181,6 @@ function drawChart(array) {
 
 
     var data = [];
-
     var header = ["Label"];
     for (var i = 0; i < columnsToDraw.length; i++) {
         header.push(cols[columnsToDraw[i]].label + " Occurances");
@@ -120,7 +205,10 @@ function drawChart(array) {
     var activeChart = $(".activeChart").text();
     console.log(activeChart)
 
-    var options = {};
+    var options = {
+        colors: colors,
+        height: 600
+    };
 
 
     if (activeChart == "Area") {
@@ -133,7 +221,6 @@ function drawChart(array) {
     }
     else if (activeChart == "Bar") {
         var chart = new google.visualization.BarChart(document.getElementById("chartArea"));
-        
     }
     else if (activeChart == "Column") {
         var chart = new google.visualization.ColumnChart(document.getElementById("chartArea"));
@@ -146,10 +233,12 @@ function drawChart(array) {
     else if (activeChart == "Donut") {
         var chart = new google.visualization.PieChart(document.getElementById("chartArea"));
         options["pieHole"] = 0.4;
+        delete options["colors"];
     }
     else if (activeChart == "Pie") {
         var chart = new google.visualization.PieChart(document.getElementById("chartArea"));
-        
+        delete options["colors"];
+       
     }
     else if (activeChart == "Stacked bar") {
         var chart = new google.visualization.BarChart(document.getElementById("chartArea"));
@@ -163,12 +252,32 @@ function drawChart(array) {
         var chart = new google.visualization.WordTree(document.getElementById("chartArea"));
         
     }
-    else if (activeChart == "Stepped Area") {
-        var chart = new google.visualization.AreaChart(document.getElementById("chartArea"));
+    else if (activeChart == "Line Sharp") {
+        var chart = new google.visualization.LineChart(document.getElementById("chartArea"));
         
     }
-    else if (activeChart == "Stepped Area") {
-        var chart = new google.visualization.AreaChart(document.getElementById("chartArea"));
+    else if (activeChart == "Line Smooth") {
+        var chart = new google.visualization.LineChart(document.getElementById("chartArea"));
+        options["curveType"] = "function";
+    }
+    else if (activeChart == "Timeline") {
+        var chart = new google.visualization.Timeline(document.getElementById("chartArea"));
+        
+    }
+    else if (activeChart == "Scatter") {
+        var chart = new google.visualization.ScatterChart(document.getElementById("chartArea"));
+        
+    }
+    else if (activeChart == "Historgram") {
+        var chart = new google.visualization.Histogram(document.getElementById("chartArea"));
+        
+    }
+    else if (activeChart == "Geo") {
+        var chart = new google.visualization.GeoChart(document.getElementById("chartArea"));
+        
+    }
+    else if (activeChart == "Map") {
+        var chart = new google.visualization.Map(document.getElementById("chartArea"));
         
     }
     chart.draw(view, options);
@@ -185,11 +294,26 @@ function drawChart(array) {
 var chartsCategoryMapping = {
 
     "Comparison" : ["Area", "Stepped Area", "Bar", "Column"],
-    "Composition": ["Bar", "Column", "Combo", "Donut", "Pie", "Stacked bar", "Tree Map", "Word"]
+    "Composition": ["Bar", "Column", "Combo", "Donut", "Pie", "Stacked bar", "Tree Map", "Word"],
+    "Process": ["Area", "Stepped Area", "Line Sharp", "Line Smooth", "Timeline"],
+    "Relationship" : ["Combo", "Scatter", "Tree Map", "Word"],
+    "Distribution" : ["Area", "Stepped Area", "Column", "Historgram", "Scatter", "Stacked bar"],
+    "Geography" : ["Geo", "Map"]
     
-    //"Geo", "Historgram", "Line Sharp", "Line Smooth", "Map",
-     //"Scatter", ""
-        
         
     
 }
+var allowMultiple = ["Area", "Stepped Area", "Bar", "Column", "Combo", "Historgram", "Line Sharp", "Line Smooth", "Scatter", "Stacked bar", "Timeline"];
+
+
+
+
+
+
+
+
+
+
+
+
+

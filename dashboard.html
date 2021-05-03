@@ -18,7 +18,7 @@
         var table;
         var tableParams = { showRowNumber: false, allowHtml: true, page: 'enable', pageSize: 25, width: '100%', height: '100%' };
 
-        google.charts.load('current', { 'packages': ['table', 'corechart', 'treemap', 'wordtree', 'timeline', 'geochart', 'map'] }).then(function () {
+        google.charts.load('current', { 'packages': ['table', 'corechart', 'treemap', 'wordtree', 'timeline', 'geochart', 'map'], 'mapsApiKey': 'AIzaSyBMxfYpqNf17XsqqPOJSvcX2Zt4aADPOi8' }).then(function () {
             dt = new google.visualization.DataTable({ cols: cols, rows: rows });
 
             var view = new google.visualization.DataView(dt);
@@ -271,7 +271,14 @@
 
         </div>
         <button id="addChartColumn">Add</button>
-
+        <div id="visualizationTypeDiv">
+            Y axis: <select id="visualizationType">
+                <option>
+                    Total occurrences
+                </option>
+            </select>
+        </div>
+        <div id="options"></div>
         <div id="chartArea">
 
         </div>
@@ -468,11 +475,15 @@
 
         }
 
-        .filterDiv input,
-        select, #chartColumns div input, #chartColumns div select  {
+        .filterDiv input, .filterDiv select, select {
             width: 30%;
             margin: 1rem;
         }
+        #chartColumns div input, #chartColumns div select {
+            width: 45%;
+            margin: 1rem;
+        }
+        
 
         #chartsAvailable div {
             width: 22%;
@@ -484,6 +495,9 @@
 
             border: solid turquoise 1px;
 
+        }
+        #addChartColumn {
+            display: none;
         }
     </style>
 

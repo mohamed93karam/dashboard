@@ -1,4 +1,9 @@
-$("#chartsCategory").change(function(){
+$("#visualizationType").append(cols.reduce(function (total, currentValue, currentIndex, arr) {
+    return currentIndex > 1 && currentValue.type == "number" ? total + "<option value=" + currentIndex + " data-type='" + currentValue.type + "'>" + currentValue.label + "</option>" : total;
+}, ""));
+
+
+$("#chartsCategory").change(function () {
     var charts = chartsCategoryMapping[$(this).val()];
     console.log(charts)
     var html = "";
@@ -26,7 +31,7 @@ function checkifImgsLoaded(imgs) {
             return setTimeout(checkifImgsLoaded, 200, imgs);
 
         }
-    
+
     }
 
     $("#showVisualization").click().click();
@@ -37,7 +42,7 @@ function checkifImgsLoaded(imgs) {
 
 
 
-$("#chartsAvailable").on("click", "div", function() {
+$("#chartsAvailable").on("click", "div", function () {
 
     $(this).siblings().removeClass("activeChart");
     $(this).addClass("activeChart");
@@ -55,9 +60,18 @@ $("#chartsAvailable").on("click", "div", function() {
     }
 
 
+    if (activeChart == "Combo") {
+        var comboSeriesTypeOptions = [ 'line', 'area', 'bars', 'candlesticks', 'steppedArea'];
+        $(".options").html("<select class='comboSeriesType'><option>" + comboSeriesTypeOptions.join("</option><option>") + "</option></select>");
+    }
+    else {
+        $(".options").html("");
+    }
+
+
     if (allowMultiple.indexOf(activeChart) == -1) {
 
-        var columnsDivs = $("#chartColumns").find("div");
+        var columnsDivs = $("#chartColumns").children("div");
         for (var i = 1; i < columnsDivs.length; i++) {
 
             columnsDivs.eq(i).remove();
@@ -71,17 +85,17 @@ $("#chartsAvailable").on("click", "div", function() {
     }
 
 
-    if ($("#chartColumns").find("div").length == 0) {
+    if ($("#chartColumns").children("div").length == 0) {
         $("#addChartColumn").click();
     }
-    
-    
+
+
     $("#showVisualization").click().click();
     drawChart();
 
 })
 
-$("#addChartColumn").click(function(){
+$("#addChartColumn").click(function () {
 
     var div = "<div>";
     div += "<select class=''>" + cols.reduce(function (total, currentValue, currentIndex, arr) {
@@ -91,11 +105,11 @@ $("#addChartColumn").click(function(){
 
     div += "<input type='color'>";
 
-    div += "<input type='text'><button class='deleteColumn'><i class='fas fa-trash-alt'></i></button></div>";
+    div += "<div class='options'></div><button class='deleteColumn'><i class='fas fa-trash-alt'></i></button>";
 
     div += "</div>";
-
     
+
 
     $("#chartColumns").append(div);
 
@@ -112,21 +126,32 @@ $("#addChartColumn").click(function(){
     }
 
     
+    if (activeChart == "Combo") {
+        var comboSeriesTypeOptions = [ 'line', 'area', 'bars', 'candlesticks', 'steppedArea'];
+        $(".options:last").html("<select class='comboSeriesType'><option>" + comboSeriesTypeOptions.join("</option><option>") + "</option></select>");
+    }
+    else {
+        $(".options").html("");
+    }
+
+
+
 
     $("#showVisualization").click().click();
 });
 
-$("#chartColumns").on("click", ".deleteColumn", function(){
+
+$("#chartColumns").on("click", ".deleteColumn", function () {
 
     $(this).closest("div").remove();
-    if ($("#chartColumns").find("div").length == 0) {
+    if ($("#chartColumns").children("div").length == 0) {
         $("#addChartColumn").click();
-    }    
+    }
     drawChart();
 
 });
 
-$("#chartColumns").on("change", "input,select", function(){
+$("#chartColumns,#visualizationTypeDiv").on("change", "input,select", function () {
 
     drawChart();
 
@@ -136,74 +161,128 @@ $("#chartColumns").on("change", "input,select", function(){
 
 function drawChart(array) {
 
-    array =  array || redrawTable(true);
+    array = array || redrawTable(true);
 
-    var columnsDivs = $("#chartColumns").find("div");
-    
-    var obj = {};
-   
-    var colors = [];
 
-    var columnsToDraw = [];
+        var columnsDivs = $("#chartColumns").children("div");
 
-    for (var i = 0; i < columnsDivs.length; i++) {
-        var columnSelected = columnsDivs.eq(i).find("select").eq(0).val();
-        if (!columnSelected) continue;
-        colors.push(columnsDivs.eq(i).find("input").eq(0).val());
-        columnsToDraw.push(parseInt(columnsDivs.eq(i).find("select").eq(0).val(), 10));
 
-    }
-    if (columnsToDraw.length == 0) return $("#chartArea").html("");
-    console.log("columnsToDraw")
-    console.log(columnsToDraw)
+        var obj = {};
 
-    for (var i = 0; i < array.length; i++) {
+        var colors = [];
 
-        for (var j = 0; j < columnsToDraw.length; j++) {
+        var columnsToDraw = [];
 
-            if (!obj[array[i][columnsToDraw[j]]]) {
-                
-                obj[array[i][columnsToDraw[j]]] = [];
+        for (var i = 0; i < columnsDivs.length; i++) {
 
-                for (var k = 0; k < columnsToDraw.length; k++) {
-                    obj[array[i][columnsToDraw[j]]].push(0);
+            console.log(columnsDivs.eq(i).html())
+
+            var columnSelected = columnsDivs.eq(i).find("select").eq(0).val();
+            if (!columnSelected) continue;
+            colors.push(columnsDivs.eq(i).find("input").eq(0).val());
+
+            
+            columnsToDraw.push(parseInt(columnsDivs.eq(i).find("select").eq(0).val(), 10));
+
+        }
+        if (columnsToDraw.length == 0) return $("#chartArea").html("");
+     
+     
+    if ($("#visualizationType").val() == "Total occurrences") {
+
+        for (var i = 0; i < array.length; i++) {
+
+            for (var j = 0; j < columnsToDraw.length; j++) {
+
+                if (!obj[array[i][columnsToDraw[j]]]) {
+
+                    obj[array[i][columnsToDraw[j]]] = [];
+
+                    for (var k = 0; k < columnsToDraw.length; k++) {
+                        obj[array[i][columnsToDraw[j]]].push(0);
+                    }
+
+
                 }
 
+                obj[array[i][columnsToDraw[j]]][j]++;
 
             }
 
-            obj[array[i][columnsToDraw[j]]][j]++;
 
         }
-        
+
+        console.log(columnsToDraw)
+        var data = [];
+        var header = ["Label"];
+        for (var i = 0; i < columnsToDraw.length; i++) {
+            header.push(cols[columnsToDraw[i]].label + " Occurances");
+        }
+
+        data.push(header);
+
+        for (var label in obj) {
+            obj[label].unshift(label);
+
+            data.push(obj[label]);
+
+        }
+
+
+
+
+        console.log(data);
+
 
     }
 
+    else {
+        var data = [["Label"]];
 
-    var data = [];
-    var header = ["Label"];
-    for (var i = 0; i < columnsToDraw.length; i++) {
-        header.push(cols[columnsToDraw[i]].label + " Occurances");
+        for (var i = 0; i < columnsToDraw.length; i++) {
+            data[0].push( $("#visualizationType").find("option:selected").text() + " for " + cols[columnsToDraw[i]].label);
+        }
+
+
+        for (var i = 0; i < array.length; i++) {
+
+            for (var j = 0; j < columnsToDraw.length; j++) {
+                
+                var row = [array[i][columnsToDraw[j]]];
+
+                for (var k = 0; k < columnsToDraw.length; k++) {
+                    row.push(null);
+                }
+
+                row[j + 1] = array[i][$("#visualizationType").val()];
+                data.push(row);
+            }
+        }
+
+
+
+
     }
 
-    data.push(header);
-
-    for (var label in obj) {
-        obj[label].unshift(label);
-
-        data.push(obj[label]);
-
-    }
-
-
-
-
-    console.log(data);
-
-    var view = google.visualization.arrayToDataTable(data);
 
     var activeChart = $(".activeChart").text();
     console.log(activeChart)
+
+    if (activeChart == "Tree Map") {
+        data[0].splice(1, 0, "Parent");
+        for (var i = 1; i < data.length; i++) {
+
+            data[i].splice(1, 0, null);
+        }
+    }
+
+    console.log("data")
+    console.log(data)
+
+
+
+    var view = google.visualization.arrayToDataTable(data);
+
 
     var options = {
         colors: colors,
@@ -217,18 +296,26 @@ function drawChart(array) {
     }
     else if (activeChart == "Stepped Area") {
         var chart = new google.visualization.SteppedAreaChart(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Bar") {
         var chart = new google.visualization.BarChart(document.getElementById("chartArea"));
     }
     else if (activeChart == "Column") {
         var chart = new google.visualization.ColumnChart(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Combo") {
         var chart = new google.visualization.ComboChart(document.getElementById("chartArea"));
         
+        var comboTypes = $(".comboSeriesType");
+        options["series"] = [];
+        for (var i = 0; i < comboTypes.length; i++) {
+
+            options["series"].push({type: comboTypes.eq(i).val()})
+        }
+        
+
     }
     else if (activeChart == "Donut") {
         var chart = new google.visualization.PieChart(document.getElementById("chartArea"));
@@ -238,23 +325,26 @@ function drawChart(array) {
     else if (activeChart == "Pie") {
         var chart = new google.visualization.PieChart(document.getElementById("chartArea"));
         delete options["colors"];
-       
+
     }
     else if (activeChart == "Stacked bar") {
         var chart = new google.visualization.BarChart(document.getElementById("chartArea"));
         options["isStacked"] = true;
     }
     else if (activeChart == "Tree Map") {
+
+
+
         var chart = new google.visualization.TreeMap(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Word") {
         var chart = new google.visualization.WordTree(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Line Sharp") {
         var chart = new google.visualization.LineChart(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Line Smooth") {
         var chart = new google.visualization.LineChart(document.getElementById("chartArea"));
@@ -262,23 +352,23 @@ function drawChart(array) {
     }
     else if (activeChart == "Timeline") {
         var chart = new google.visualization.Timeline(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Scatter") {
         var chart = new google.visualization.ScatterChart(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Historgram") {
         var chart = new google.visualization.Histogram(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Geo") {
         var chart = new google.visualization.GeoChart(document.getElementById("chartArea"));
-        
+
     }
     else if (activeChart == "Map") {
         var chart = new google.visualization.Map(document.getElementById("chartArea"));
-        
+
     }
     chart.draw(view, options);
 
@@ -293,15 +383,15 @@ function drawChart(array) {
 
 var chartsCategoryMapping = {
 
-    "Comparison" : ["Area", "Stepped Area", "Bar", "Column"],
+    "Comparison": ["Area", "Stepped Area", "Bar", "Column"],
     "Composition": ["Bar", "Column", "Combo", "Donut", "Pie", "Stacked bar", "Tree Map", "Word"],
     "Process": ["Area", "Stepped Area", "Line Sharp", "Line Smooth", "Timeline"],
-    "Relationship" : ["Combo", "Scatter", "Tree Map", "Word"],
-    "Distribution" : ["Area", "Stepped Area", "Column", "Historgram", "Scatter", "Stacked bar"],
-    "Geography" : ["Geo", "Map"]
-    
-        
-    
+    "Relationship": ["Combo", "Scatter", "Tree Map", "Word"],
+    "Distribution": ["Area", "Stepped Area", "Column", "Historgram", "Scatter", "Stacked bar"],
+    "Geography": ["Geo", "Map"]
+
+
+
 }
 var allowMultiple = ["Area", "Stepped Area", "Bar", "Column", "Combo", "Historgram", "Line Sharp", "Line Smooth", "Scatter", "Stacked bar", "Timeline"];
 

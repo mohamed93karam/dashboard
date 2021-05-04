@@ -44,13 +44,51 @@ function checkifImgsLoaded(imgs) {
 
 $("#chartsAvailable").on("click", "div", function () {
 
+
+    var previousChart = $(".activeChart").eq(0).text();
+
     $(this).siblings().removeClass("activeChart");
     $(this).addClass("activeChart");
     $("#chartArea").html("");
 
     var activeChart = $(this).text();
 
-    if (activeChart == "Pie" || activeChart == "Donut") {
+
+    if (activeChart == "Timeline") {
+
+        $("#addChartColumn,#visualizationTypeDiv").hide();
+
+
+        var html = "<div>";
+
+        html += "<select>" + cols.reduce(function (total, currentValue, currentIndex, arr) {
+            return currentIndex > 1 && currentValue.type != "date" ? total + "<option value=" + currentIndex + " data-type='" + currentValue.type + "'>" + currentValue.label + "</option>" : total;
+        }, "") + "</select>";
+        html += "<select>" + cols.reduce(function (total, currentValue, currentIndex, arr) {
+            return currentIndex > 1 && currentValue.type != "date" ? total + "<option value=" + currentIndex + " data-type='" + currentValue.type + "'>" + currentValue.label + "</option>" : total;
+        }, "") + "</select>";
+        html += "<select>" + cols.reduce(function (total, currentValue, currentIndex, arr) {
+            return currentIndex > 1 && currentValue.type != "date" ? total + "<option value=" + currentIndex + " data-type='" + currentValue.type + "'>" + currentValue.label + "</option>" : total;
+        }, "") + "</select>";
+
+        html += "</div>";
+
+        $("#chartColumns").html(html);
+
+        return;
+    }
+
+
+
+    if (previousChart == "Timeline") {
+        $("#chartColumns").html("");
+        $("#addChartColumn,#visualizationTypeDiv").show();
+
+    }
+
+
+
+    if (activeChart == "Pie" || activeChart == "Donut" || activeChart == "Tree Map") {
 
         $("#chartColumns").find("input[type='color']").css("visibility", "hidden");
     }
@@ -61,7 +99,7 @@ $("#chartsAvailable").on("click", "div", function () {
 
 
     if (activeChart == "Combo") {
-        var comboSeriesTypeOptions = [ 'line', 'area', 'bars', 'candlesticks', 'steppedArea'];
+        var comboSeriesTypeOptions = ['line', 'area', 'bars', 'candlesticks', 'steppedArea'];
         $(".options").html("<select class='comboSeriesType'><option>" + comboSeriesTypeOptions.join("</option><option>") + "</option></select>");
     }
     else {
@@ -108,13 +146,13 @@ $("#addChartColumn").click(function () {
     div += "<div class='options'></div><button class='deleteColumn'><i class='fas fa-trash-alt'></i></button>";
 
     div += "</div>";
-    
+
 
 
     $("#chartColumns").append(div);
 
     var activeChart = $(".activeChart").eq(0).text();
-    if (activeChart == "Pie" || activeChart == "Donut") {
+    if (activeChart == "Pie" || activeChart == "Donut" || activeChart == "Tree Map") {
 
         $("#chartColumns").find("input[type='color']").css("visibility", "hidden");
 
@@ -125,9 +163,9 @@ $("#addChartColumn").click(function () {
 
     }
 
-    
+
     if (activeChart == "Combo") {
-        var comboSeriesTypeOptions = [ 'line', 'area', 'bars', 'candlesticks', 'steppedArea'];
+        var comboSeriesTypeOptions = ['line', 'area', 'bars', 'candlesticks', 'steppedArea'];
         $(".options:last").html("<select class='comboSeriesType'><option>" + comboSeriesTypeOptions.join("</option><option>") + "</option></select>");
     }
     else {
@@ -163,7 +201,34 @@ function drawChart(array) {
 
     array = array || redrawTable(true);
 
+    var activeChart = $(".activeChart").text();
 
+    if (activeChart == "Timeline") {
+
+        var columnsSelects = $("#chartColumns").find("select");
+
+        var data = [];
+
+        data.push([
+            cols[columnsSelects.eq(0).val()].label,
+            cols[columnsSelects.eq(1).val()].label,
+            cols[columnsSelects.eq(2).val()].label
+        ]);
+
+        for (var i = 0; i < array.length; i++) {
+            data.push([
+                array[i][columnsSelects.eq(0).val()],
+                array[i][columnsSelects.eq(1).val()],
+                array[i][columnsSelects.eq(2).val()]
+            ]);
+                
+
+        }
+
+
+
+    }
+    else {
         var columnsDivs = $("#chartColumns").children("div");
 
 
@@ -181,105 +246,105 @@ function drawChart(array) {
             if (!columnSelected) continue;
             colors.push(columnsDivs.eq(i).find("input").eq(0).val());
 
-            
+
             columnsToDraw.push(parseInt(columnsDivs.eq(i).find("select").eq(0).val(), 10));
 
         }
         if (columnsToDraw.length == 0) return $("#chartArea").html("");
-     
-     
-    if ($("#visualizationType").val() == "Total occurrences") {
 
-        for (var i = 0; i < array.length; i++) {
 
-            for (var j = 0; j < columnsToDraw.length; j++) {
+        if ($("#visualizationType").val() == "Total occurrences") {
 
-                if (!obj[array[i][columnsToDraw[j]]]) {
+            for (var i = 0; i < array.length; i++) {
 
-                    obj[array[i][columnsToDraw[j]]] = [];
+                for (var j = 0; j < columnsToDraw.length; j++) {
 
-                    for (var k = 0; k < columnsToDraw.length; k++) {
-                        obj[array[i][columnsToDraw[j]]].push(0);
+                    if (!obj[array[i][columnsToDraw[j]]]) {
+
+                        obj[array[i][columnsToDraw[j]]] = [];
+
+                        for (var k = 0; k < columnsToDraw.length; k++) {
+                            obj[array[i][columnsToDraw[j]]].push(0);
+                        }
+
+
                     }
 
+                    obj[array[i][columnsToDraw[j]]][j]++;
 
                 }
 
-                obj[array[i][columnsToDraw[j]]][j]++;
+
+            }
+
+            console.log(columnsToDraw)
+            var data = [];
+            var header = ["Label"];
+            for (var i = 0; i < columnsToDraw.length; i++) {
+                header.push(cols[columnsToDraw[i]].label + " Occurances");
+            }
+
+            data.push(header);
+
+            for (var label in obj) {
+                obj[label].unshift(label);
+
+                data.push(obj[label]);
 
             }
 
 
-        }
 
-        console.log(columnsToDraw)
-        var data = [];
-        var header = ["Label"];
-        for (var i = 0; i < columnsToDraw.length; i++) {
-            header.push(cols[columnsToDraw[i]].label + " Occurances");
-        }
 
-        data.push(header);
+            console.log(data);
 
-        for (var label in obj) {
-            obj[label].unshift(label);
-
-            data.push(obj[label]);
 
         }
 
+        else {
+            var data = [["Label"]];
+
+            for (var i = 0; i < columnsToDraw.length; i++) {
+                data[0].push($("#visualizationType").find("option:selected").text() + " for " + cols[columnsToDraw[i]].label);
+            }
 
 
+            for (var i = 0; i < array.length; i++) {
 
-        console.log(data);
+                for (var j = 0; j < columnsToDraw.length; j++) {
 
+                    var row = [array[i][columnsToDraw[j]]];
 
-    }
+                    for (var k = 0; k < columnsToDraw.length; k++) {
+                        row.push(null);
+                    }
 
-    else {
-        var data = [["Label"]];
-
-        for (var i = 0; i < columnsToDraw.length; i++) {
-            data[0].push( $("#visualizationType").find("option:selected").text() + " for " + cols[columnsToDraw[i]].label);
-        }
-
-
-        for (var i = 0; i < array.length; i++) {
-
-            for (var j = 0; j < columnsToDraw.length; j++) {
-                
-                var row = [array[i][columnsToDraw[j]]];
-
-                for (var k = 0; k < columnsToDraw.length; k++) {
-                    row.push(null);
+                    row[j + 1] = array[i][$("#visualizationType").val()];
+                    data.push(row);
                 }
+            }
 
-                row[j + 1] = array[i][$("#visualizationType").val()];
-                data.push(row);
+
+
+
+        }
+
+
+        console.log(activeChart)
+
+        if (activeChart == "Tree Map") {
+            data[0].splice(1, 0, "Parent");
+             data.splice(1, 0, ["All records", null, 0])
+            for (var i = 2; i < data.length; i++) {
+
+                data[i].splice(1, 0, "All records");
             }
         }
-
-
-
-
     }
 
-
-    var activeChart = $(".activeChart").text();
-    console.log(activeChart)
-
-    if (activeChart == "Tree Map") {
-        data[0].splice(1, 0, "Parent");
-        for (var i = 1; i < data.length; i++) {
-
-            data[i].splice(1, 0, null);
-        }
-    }
 
     console.log("data")
     console.log(data)
-
-
 
     var view = google.visualization.arrayToDataTable(data);
 
@@ -307,14 +372,14 @@ function drawChart(array) {
     }
     else if (activeChart == "Combo") {
         var chart = new google.visualization.ComboChart(document.getElementById("chartArea"));
-        
+
         var comboTypes = $(".comboSeriesType");
         options["series"] = [];
         for (var i = 0; i < comboTypes.length; i++) {
 
-            options["series"].push({type: comboTypes.eq(i).val()})
+            options["series"].push({ type: comboTypes.eq(i).val() })
         }
-        
+
 
     }
     else if (activeChart == "Donut") {

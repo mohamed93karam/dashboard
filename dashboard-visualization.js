@@ -80,7 +80,7 @@ $("#chartsAvailable").on("click", "div", function () {
 
 
 
-    if (previousChart == "Timeline") {
+    if ($("#chartColumns").children("div").eq(0).find("select").length == 3) {
         $("#chartColumns").html("");
         $("#addChartColumn,#visualizationTypeDiv").show();
 

@@ -38,7 +38,7 @@
 
 
         function redrawTable(dataOnly) {
-            console.log("drawing");
+
             tableParams.pageSize = $("#pageLength").val();
 
 
@@ -199,10 +199,7 @@
                 }
             }]));
 
-            console.log(!dataOnly)
 
-            console.log(dataOnly)
-            
             var arr = [];
             for (var i = 0; i < view.getNumberOfRows(); i++) {
                 var row = [];
@@ -214,14 +211,13 @@
             }
 
             if (!dataOnly) {
-            console.log(arr)
-            table.draw(view, tableParams);
-            $('#tab_chartdata').click().click();
+                table.draw(view, tableParams);
+                $('#tab_chartdata').click().click();
 
-            return drawChart(arr);
+                return drawChart(arr);
             }
 
-            
+
             return arr;
 
 
@@ -357,7 +353,6 @@
 
         $("#newFilterGroup").click(function () {
 
-            console.log($("#filtersArea").find(".filterGroup"))
             if ($("#filtersArea").find(".filterGroup").length > 0) {
 
                 $("#filtersArea").append("<div>OR</div>");
@@ -392,8 +387,6 @@
                 var operatorsToUse = stringOperators;
             }
 
-            console.log(type)
-            console.log(filterDiv.find("select").length)
             if (type == "boolean" && filterDiv.find("input").length > 0) {
 
 
@@ -469,20 +462,25 @@
 
         }
 
-        .filterDiv,  #chartColumns div {
+        .filterDiv,
+        #chartColumns div {
             display: flex;
 
         }
 
-        .filterDiv input, .filterDiv select, select {
+        .filterDiv input,
+        .filterDiv select,
+        select {
             width: 30%;
             margin: 1rem;
         }
-        #chartColumns div input, #chartColumns div select {
+
+        #chartColumns div input,
+        #chartColumns div select {
             width: 45%;
             margin: 1rem;
         }
-        
+
 
         #chartsAvailable div {
             width: 22%;
@@ -495,6 +493,7 @@
             border: solid turquoise 1px;
 
         }
+
         #addChartColumn {
             display: none;
         }

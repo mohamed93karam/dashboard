@@ -5,10 +5,9 @@ $("#visualizationType").append(cols.reduce(function (total, currentValue, curren
 
 $("#chartsCategory").change(function () {
     var charts = chartsCategoryMapping[$(this).val()];
-    console.log(charts)
     var html = "";
     for (var i = 0; i < charts.length; i++) {
-        html += "<div><img src='https://developers.google.com/chart/interactive/docs/gallery/images/icon-annotatedtimeline.png'><br>" + charts[i] + "</div>";
+        html += "<div><img src='thumbnails/" + charts[i] + ".png' width=200 height=100><br>" + charts[i] + "</div>";
 
 
     }
@@ -25,7 +24,6 @@ function checkifImgsLoaded(imgs) {
 
 
     for (var i = 0; i < imgs.length; i++) {
-        console.log(imgs.eq(i).attr("src"))
         if (!imgs.eq(i)[0].complete) {
 
             return setTimeout(checkifImgsLoaded, 200, imgs);
@@ -221,7 +219,7 @@ function drawChart(array) {
                 array[i][columnsSelects.eq(1).val()],
                 array[i][columnsSelects.eq(2).val()]
             ]);
-                
+
 
         }
 
@@ -240,7 +238,6 @@ function drawChart(array) {
 
         for (var i = 0; i < columnsDivs.length; i++) {
 
-            console.log(columnsDivs.eq(i).html())
 
             var columnSelected = columnsDivs.eq(i).find("select").eq(0).val();
             if (!columnSelected) continue;
@@ -277,7 +274,6 @@ function drawChart(array) {
 
             }
 
-            console.log(columnsToDraw)
             var data = [];
             var header = ["Label"];
             for (var i = 0; i < columnsToDraw.length; i++) {
@@ -296,7 +292,6 @@ function drawChart(array) {
 
 
 
-            console.log(data);
 
 
         }
@@ -330,11 +325,10 @@ function drawChart(array) {
         }
 
 
-        console.log(activeChart)
 
         if (activeChart == "Tree Map") {
             data[0].splice(1, 0, "Parent");
-             data.splice(1, 0, ["All records", null, 0])
+            data.splice(1, 0, ["All records", null, 0])
             for (var i = 2; i < data.length; i++) {
 
                 data[i].splice(1, 0, "All records");
@@ -343,8 +337,6 @@ function drawChart(array) {
     }
 
 
-    console.log("data")
-    console.log(data)
 
     var view = google.visualization.arrayToDataTable(data);
 

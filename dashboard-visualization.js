@@ -415,7 +415,7 @@ function drawChart(array) {
         var chart = new google.visualization.ScatterChart(document.getElementById("chartArea"));
 
     }
-    else if (activeChart == "Historgram") {
+    else if (activeChart == "Histogram") {
         var chart = new google.visualization.Histogram(document.getElementById("chartArea"));
 
     }
@@ -444,13 +444,13 @@ var chartsCategoryMapping = {
     "Composition": ["Bar", "Column", "Combo", "Donut", "Pie", "Stacked bar", "Tree Map", "Word"],
     "Process": ["Area", "Stepped Area", "Line Sharp", "Line Smooth", "Timeline"],
     "Relationship": ["Combo", "Scatter", "Tree Map", "Word"],
-    "Distribution": ["Area", "Stepped Area", "Column", "Historgram", "Scatter", "Stacked bar"],
+    "Distribution": ["Area", "Stepped Area", "Column", "Histogram", "Scatter", "Stacked bar"],
     "Geography": ["Geo", "Map"]
 
 
 
 }
-var allowMultiple = ["Area", "Stepped Area", "Bar", "Column", "Combo", "Historgram", "Line Sharp", "Line Smooth", "Scatter", "Stacked bar", "Timeline"];
+var allowMultiple = ["Area", "Stepped Area", "Bar", "Column", "Combo", "Histogram", "Line Sharp", "Line Smooth", "Scatter", "Stacked bar", "Timeline"];
 
 
 
